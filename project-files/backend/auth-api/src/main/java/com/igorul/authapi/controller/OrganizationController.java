@@ -37,7 +37,7 @@ public class OrganizationController {
 
     @Operation(summary = "Edit an org's data by their id (partial editing accepted)")
     @PutMapping("/{id}")
-    public Organization updateUser(@PathVariable Long id,
+    public Organization updateOrganization(@PathVariable Long id,
                            @RequestBody Organization org) {
 
         return organizationService.updateOrganization(id, org);

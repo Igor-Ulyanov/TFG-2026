@@ -57,5 +57,35 @@ public class RoleService {
         return roleRepository.save(role);
     }
 
+    public Role updateRole(Long id, CreateRoleRequest request) {
 
+        Role role = roleRepository.findById(id)
+                .orElseThrow();
+
+        if (request.getName() != null) {
+            role.setName(request.getName());
+        }
+
+        if (request.getDescription() != null) {
+            role.setDescription(request.getDescription());
+        }
+
+        if (request.getOrganizationName() != null) {
+            Organization newOrg = organizationRepository.findByName(
+                    request.getOrganizationName()
+            );
+
+            role.setOrganization(newOrg);
+        }
+
+        if (request.getPermissions() != null) {
+            List<Permission> newPermissions =
+                    permissionRepository.findByNameIn(
+                            request.getPermissions()
+                    );
+            role.setPermissions(newPermissions);
+        }
+
+        return roleRepository.save(role);
+    }
 }

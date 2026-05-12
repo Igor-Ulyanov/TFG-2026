@@ -1,5 +1,6 @@
 package com.igorul.authapi.controller;
 
+import com.igorul.authapi.model.Organization;
 import com.igorul.authapi.model.Role;
 import com.igorul.authapi.dto.CreateRoleRequest;
 import com.igorul.authapi.service.RoleService;
@@ -39,6 +40,14 @@ public class RoleController{
     public Role createRole(@RequestBody CreateRoleRequest request) {
         return roleService.createRole(request);
 }
+
+    @Operation(summary = "Edit a role's data by their id (partial editing accepted)")
+    @PutMapping("/{id}")
+    public Role updateRole(@PathVariable Long id,
+                           @RequestBody CreateRoleRequest request) {
+
+        return roleService.updateRole(id, request);
+    }
 
 
 }
