@@ -16,6 +16,14 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())){
+            throw new RuntimeException("Email already in use");
+        };
+
+        if (userRepository.existsByUsername(user.getUsername())){
+            throw new RuntimeException("Username already in use");
+        };
+
         return userRepository.save(user);
     }
 
@@ -24,19 +32,43 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found");
+        }
+
         userRepository.deleteById(id);
     }
 
     public User updateUser(Long id, User updatedUser) {
 
         User user = userRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(()-> new RuntimeException("User not found"));
 
         if (updatedUser.getUsername() != null) {
+
+            User existingUser =
+                    userRepository.findByUsername(updatedUser.getUsername());
+
+            if (existingUser != null &&
+                    !existingUser.getId().equals(user.getId())) {
+
+                throw new RuntimeException("Username already in use");
+            }
+
             user.setUsername(updatedUser.getUsername());
         }
 
         if (updatedUser.getEmail() != null) {
+
+            User existingUser =
+                    userRepository.findByEmail(updatedUser.getEmail());
+
+            if (existingUser != null &&
+                    !existingUser.getId().equals(user.getId())) {
+
+                throw new RuntimeException("Email already in use");
+            }
+
             user.setEmail(updatedUser.getEmail());
         }
 

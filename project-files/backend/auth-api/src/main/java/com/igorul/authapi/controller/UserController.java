@@ -2,6 +2,7 @@ package com.igorul.authapi.controller;
 
 import com.igorul.authapi.model.User;
 import com.igorul.authapi.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +23,7 @@ public class UserController {
 
     @Operation(summary = "Create a new user")
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
 
