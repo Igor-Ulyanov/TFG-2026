@@ -16,6 +16,15 @@ public class OrganizationService {
     }
 
     public Organization createOrganization(Organization organization) {
+
+        if (organizationRepository.existsByName(organization.getName())){
+            throw new RuntimeException("There is already an organization with this name");
+        };
+
+        if (!organizationRepository.existsById(organization.getParent_id()) && organization.getParent_id() != null){
+            throw new RuntimeException("There is no org with this id");
+        };
+
         return organizationRepository.save(organization);
     }
 
@@ -24,6 +33,11 @@ public class OrganizationService {
     }
 
     public void deleteOrganization(Long id) {
+
+        if (!organizationRepository.existsById(id)) {
+            throw new RuntimeException("Organization not found");
+        }
+
         organizationRepository.deleteById(id);
     }
 
@@ -33,6 +47,11 @@ public class OrganizationService {
                 .orElseThrow();
 
         if (updatedOrg.getName() != null) {
+
+            if (organizationRepository.existsByName(updatedOrg.getName())){
+                throw new RuntimeException("There is already an organization with this name");
+            };
+
             org.setName(updatedOrg.getName());
         }
 
@@ -40,8 +59,13 @@ public class OrganizationService {
             org.setDescription(updatedOrg.getDescription());
         }
 
-        if (updatedOrg.getParentId() != null) {
-            org.setParentId(updatedOrg.getParentId());
+        if (updatedOrg.getParent_id() != null) {
+
+            if (!organizationRepository.existsById(updatedOrg.getParent_id())){
+                throw new RuntimeException("There is no org with this id");
+            };
+
+            org.setParent_id(updatedOrg.getParent_id());
         }
 
         return organizationRepository.save(org);

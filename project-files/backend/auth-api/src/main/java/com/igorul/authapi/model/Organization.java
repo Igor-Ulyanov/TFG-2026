@@ -1,6 +1,7 @@
 package com.igorul.authapi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "organizations")
@@ -10,11 +11,18 @@ public class Organization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Name is required")
     private String name;
+
     private String description;
-    private Long parent_id;
+    private Long parent_id = 4L;
 
     public Organization() {}
+
+    public Organization(Long parent_id) {
+        this.parent_id = parent_id;
+    }
+
 
     public Long getId() {
         return id;
@@ -36,11 +44,11 @@ public class Organization {
         this.description = description;
     }
 
-    public Long getParentId() {
+    public Long getParent_id() {
         return parent_id;
     }
 
-    public void setParentId(Long parent_id) {
+    public void setParent_id(Long parent_id) {
         this.parent_id = parent_id;
     }
 }
