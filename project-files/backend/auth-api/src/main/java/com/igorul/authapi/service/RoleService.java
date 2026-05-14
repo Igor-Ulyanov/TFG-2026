@@ -3,6 +3,7 @@ package com.igorul.authapi.service;
 import com.igorul.authapi.model.Role;
 import com.igorul.authapi.model.Permission;
 import com.igorul.authapi.model.Organization;
+import com.igorul.authapi.model.User;
 import com.igorul.authapi.repository.RoleRepository;
 import com.igorul.authapi.repository.PermissionRepository;
 import com.igorul.authapi.repository.OrganizationRepository;
@@ -30,7 +31,13 @@ public class RoleService {
     }
 
     public void deleteRole(Long id) {
+
+        if (!roleRepository.existsById(id)) {
+            throw new RuntimeException("Role not found");
+        }
+
         roleRepository.deleteById(id);
+
     }
 
     public Role createRole(CreateRoleRequest request) {
@@ -40,10 +47,24 @@ public class RoleService {
                         request.getOrganizationName()
                 );
 
+        if(org == null){
+            throw new RuntimeException("There is no org with this name");
+        }
+
         List<Permission> permissions =
                 permissionRepository.findByNameIn(
                         request.getPermissions()
                 );
+
+        boolean exists = roleRepository
+                .existsByNameAndOrganization(
+                        request.getName(),
+                        org
+                );
+
+        if (exists) {
+            throw new RuntimeException("There is already a role with this name in the org");
+        }
 
         Role role = new Role();
 
@@ -60,9 +81,24 @@ public class RoleService {
     public Role updateRole(Long id, CreateRoleRequest request) {
 
         Role role = roleRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+
 
         if (request.getName() != null) {
+
+            boolean exists = roleRepository
+                    .existsByNameAndOrganizationAndIdNot(
+                            request.getName(),
+                            role.getOrganization(),
+                            role.getId()
+                    );
+
+            if (exists) {
+                throw new RuntimeException("There is already a role with this name in the org");
+            }
+
+
             role.setName(request.getName());
         }
 
@@ -71,9 +107,27 @@ public class RoleService {
         }
 
         if (request.getOrganizationName() != null) {
+
             Organization newOrg = organizationRepository.findByName(
                     request.getOrganizationName()
             );
+
+            if(newOrg == null){
+                throw new RuntimeException("There is no org with this name");
+            }
+
+            boolean exists = roleRepository
+                    .existsByNameAndOrganizationAndIdNot(
+                            role.getName(),
+                            newOrg,
+                            role.getId()
+                    );
+
+            if (exists){
+                throw new RuntimeException("There is already a role with this name in the org");
+            }
+
+
 
             role.setOrganization(newOrg);
         }

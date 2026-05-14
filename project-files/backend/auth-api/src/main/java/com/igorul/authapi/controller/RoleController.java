@@ -6,6 +6,8 @@ import com.igorul.authapi.dto.CreateRoleRequest;
 import com.igorul.authapi.service.RoleService;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -37,7 +39,7 @@ public class RoleController{
 
     @Operation(summary = "Create a new role")
     @PostMapping
-    public Role createRole(@RequestBody CreateRoleRequest request) {
+    public Role createRole(@Valid @RequestBody CreateRoleRequest request) {
         return roleService.createRole(request);
 }
 

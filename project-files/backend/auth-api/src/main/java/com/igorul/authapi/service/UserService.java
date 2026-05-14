@@ -44,10 +44,10 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("User not found"));
 
-        if (updatedUser.getUsername() != null) {
+        User existingUser =
+                userRepository.findByUsername(updatedUser.getUsername());
 
-            User existingUser =
-                    userRepository.findByUsername(updatedUser.getUsername());
+        if (updatedUser.getUsername() != null) {
 
             if (existingUser != null &&
                     !existingUser.getId().equals(user.getId())) {
@@ -59,9 +59,6 @@ public class UserService {
         }
 
         if (updatedUser.getEmail() != null) {
-
-            User existingUser =
-                    userRepository.findByEmail(updatedUser.getEmail());
 
             if (existingUser != null &&
                     !existingUser.getId().equals(user.getId())) {
