@@ -2,6 +2,7 @@ package com.igorul.authapi.service;
 
 import com.igorul.authapi.model.User;
 import com.igorul.authapi.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +11,11 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createUser(User user) {
@@ -23,6 +26,8 @@ public class UserService {
         if (userRepository.existsByUsername(user.getUsername())){
             throw new RuntimeException("Username already in use");
         };
+
+        user.setPass_hash(passwordEncoder.encode(user.getPass_hash()));
 
         return userRepository.save(user);
     }
