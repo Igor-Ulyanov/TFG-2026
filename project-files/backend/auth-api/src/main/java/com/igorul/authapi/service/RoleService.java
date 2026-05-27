@@ -11,6 +11,7 @@ import com.igorul.authapi.dto.CreateRoleRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleService {
@@ -26,8 +27,8 @@ public class RoleService {
     }
 
 
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+    public List<Role> getAllRoles(Long orgId) {
+        return roleRepository.findByOrganizationId(orgId);
     }
 
     public void deleteRole(Long id) {

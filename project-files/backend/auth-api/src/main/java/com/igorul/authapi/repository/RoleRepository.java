@@ -6,6 +6,8 @@ import com.igorul.authapi.model.User;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface RoleRepository extends JpaRepository<Role, Long> {
     Role findByName(String name);
 
@@ -14,4 +16,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     boolean existsByNameAndOrganization(String name, Organization org);
 
     Role findByNameAndOrganization(@NotBlank(message = "Please specify a role to assign") String roleName, Organization org);
+
+    List<Role> findByOrganizationId(Long orgId);
 }

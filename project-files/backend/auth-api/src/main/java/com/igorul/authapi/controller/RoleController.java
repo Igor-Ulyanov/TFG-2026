@@ -1,10 +1,11 @@
 package com.igorul.authapi.controller;
 
-import com.igorul.authapi.model.Organization;
 import com.igorul.authapi.model.Role;
 import com.igorul.authapi.dto.CreateRoleRequest;
 import com.igorul.authapi.service.RoleService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.igorul.authapi.service.AuthService;
 
 import jakarta.validation.Valid;
 
@@ -26,9 +27,10 @@ public class RoleController{
     }
 
     @Operation(summary = "View list of all Roles")
-    @GetMapping
-    public List<Role> getAllRoles() {
-        return roleService.getAllRoles();
+    @GetMapping("/{orgId}")
+    @PreAuthorize("@authorizationService.hasPermissionInOrg(authentication, #orgId, 'READ_ROLE')")
+    public List<Role> getAllRoles(@PathVariable Long orgId) {
+        return roleService.getAllRoles(orgId);
     }
 
     @Operation(summary = "Delete a role by it's id")
@@ -39,9 +41,10 @@ public class RoleController{
 
     @Operation(summary = "Create a new role")
     @PostMapping
+    @PreAuthorize("@authorizationService.canCreateRole(authentication, #request)")
     public Role createRole(@Valid @RequestBody CreateRoleRequest request) {
         return roleService.createRole(request);
-}
+    }
 
     @Operation(summary = "Edit a role's data by their id (partial editing accepted)")
     @PutMapping("/{id}")
