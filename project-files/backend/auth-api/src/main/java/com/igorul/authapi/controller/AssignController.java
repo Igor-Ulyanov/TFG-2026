@@ -34,7 +34,7 @@ public class AssignController {
     }
 
     @Operation(summary = "View list of roles for a user")
-    @GetMapping("/user-roles/")
+    @GetMapping("/user-roles")
     @PreAuthorize("@authService.hasPermission(authentication, 'ASSIGN_ROLE')")
     public List<UserOrgRole> getUserRoles(
             @RequestParam String username) {
@@ -44,6 +44,7 @@ public class AssignController {
 
     @Operation(summary = "Unassign a role to a user")
     @DeleteMapping
+    @PreAuthorize("@authService.canAssignRole(authentication, #request)")
     public void removeRole(@RequestBody AssignRoleRequest request) {
         assignService.removeRole(request);
     }
