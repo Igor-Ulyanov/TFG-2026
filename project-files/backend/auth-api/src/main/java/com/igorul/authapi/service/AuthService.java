@@ -2,9 +2,7 @@ package com.igorul.authapi.service;
 
 import com.igorul.authapi.dto.CreateRoleRequest;
 import com.igorul.authapi.model.*;
-import com.igorul.authapi.repository.OrganizationRepository;
-import com.igorul.authapi.repository.UserOrgRoleRepository;
-import com.igorul.authapi.repository.UserRepository;
+import com.igorul.authapi.repository.*;
 import com.igorul.authapi.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +22,9 @@ public class AuthService {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private JwtService jwtService;
@@ -90,5 +91,53 @@ public class AuthService {
                 org.getId(),
                 "CREATE_ROLE"
         );
+
+    }
+
+    public boolean canDeleteRole(Authentication authentication, Long id) {
+
+        Role role = roleRepository.findById(id).orElse(null);
+
+        return hasPermissionInOrg(
+                authentication,
+                role.getOrganization().getId(),
+                "DELETE_ROLE"
+        );
+    }
+
+    public boolean canUpdateRole(Authentication authentication, Long id, CreateRoleRequest request) {
+
+        Role role = roleRepository.findById(id)
+                .orElse(null);
+
+        if (role == null) {
+            return false;
+        }
+
+        Long currentOrgId = role.getOrganization().getId();
+        Long newOrgId = organizationRepository.findByName(request.getOrganizationName()).getId();
+
+        boolean hasCurrent =
+                hasPermissionInOrg(
+                        authentication,
+                        currentOrgId,
+                        "UPDATE_ROLE"
+                );
+
+        if (!hasCurrent) {
+            return false;
+        }
+
+        // si cambia de organización
+        if (!currentOrgId.equals(newOrgId)) {
+
+            return hasPermissionInOrg(
+                    authentication,
+                    newOrgId,
+                    "UPDATE_ROLE"
+            );
+        }
+
+        return true;
     }
 }

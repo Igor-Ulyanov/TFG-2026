@@ -21,33 +21,37 @@ import java.util.List;
 public class RoleController{
 
     private final RoleService roleService;
+    private final AuthService authService;
 
-    public RoleController(RoleService roleService){
+    public RoleController(RoleService roleService, AuthService authService){
         this.roleService = roleService;
+        this.authService = authService;
     }
 
-    @Operation(summary = "View list of all Roles")
+    @Operation(summary = "View list of all Roles from a specific org")
     @GetMapping("/{orgId}")
-    @PreAuthorize("@authorizationService.hasPermissionInOrg(authentication, #orgId, 'READ_ROLE')")
+    @PreAuthorize("@authService.hasPermissionInOrg(authentication, #orgId, 'READ_ROLE')")
     public List<Role> getAllRoles(@PathVariable Long orgId) {
         return roleService.getAllRoles(orgId);
     }
 
     @Operation(summary = "Delete a role by it's id")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@authService.canDeleteRole(authentication, #id)")
     public void deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
     }
 
     @Operation(summary = "Create a new role")
     @PostMapping
-    @PreAuthorize("@authorizationService.canCreateRole(authentication, #request)")
+    @PreAuthorize("@authService.canCreateRole(authentication, #request)")
     public Role createRole(@Valid @RequestBody CreateRoleRequest request) {
         return roleService.createRole(request);
     }
 
     @Operation(summary = "Edit a role's data by their id (partial editing accepted)")
     @PutMapping("/{id}")
+    @PreAuthorize("@authService.canUpdateRole(authentication, #id, #request)")
     public Role updateRole(@PathVariable Long id,
                            @RequestBody CreateRoleRequest request) {
 
