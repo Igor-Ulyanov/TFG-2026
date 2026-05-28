@@ -27,6 +27,7 @@ public class OrganizationController {
 
     @Operation(summary = "Create a new org")
     @PostMapping
+    @PreAuthorize("@authService.hasPermission(authentication, 'CREATE_ORG')")
     public Organization createOrganization(@Valid @RequestBody Organization organization) {
         return organizationService.createOrganization(organization);
     }
