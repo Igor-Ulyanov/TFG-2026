@@ -1,5 +1,6 @@
 package com.igorul.authapi.service;
 
+import com.igorul.authapi.dto.AssignRoleRequest;
 import com.igorul.authapi.dto.CreateRoleRequest;
 import com.igorul.authapi.model.*;
 import com.igorul.authapi.repository.*;
@@ -169,5 +170,19 @@ public class AuthService {
         return true;
     }
 
+    public boolean canAssignRole(Authentication authentication, AssignRoleRequest request){
 
+        Organization org = organizationRepository
+                .findByName(request.getOrganizationName());
+
+        if (org == null) {
+            return false;
+        }
+
+        return hasPermissionInOrg(
+                authentication,
+                org.getId(),
+                "ASSIGN_ROLE"
+        );
+    }
 }
