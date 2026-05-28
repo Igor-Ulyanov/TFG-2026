@@ -77,6 +77,34 @@ public class AuthService {
         return false;
     }
 
+    public boolean hasPermission(Authentication authentication, String permission) {
+
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            return false;
+        }
+
+        List<UserOrgRole> relations =
+                userOrgRoleRepository.findByUserId(user.getId());
+
+        for (UserOrgRole relation : relations) {
+
+            Role role = relation.getRole();
+
+            for (Permission p : role.getPermissions()) {
+
+                if (p.getName().equals(permission)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public boolean canCreateRole(Authentication authentication, CreateRoleRequest request) {
 
         Organization org = organizationRepository
@@ -140,4 +168,6 @@ public class AuthService {
 
         return true;
     }
+
+
 }

@@ -12,4 +12,6 @@ public interface UserOrgRoleRepository
     List<UserOrgRole> findByUser(User user);
 
     List<UserOrgRole> findByUserIdAndOrganizationId(Long id, Long orgId);
+
+    List<UserOrgRole> findByUserId(Long id);
 }

@@ -75,7 +75,7 @@ public class UserService {
         }
 
         if (updatedUser.getPass_hash() != null) {
-            user.setPass_hash(updatedUser.getPass_hash());
+            user.setPass_hash(passwordEncoder.encode(updatedUser.getPass_hash()));
         }
 
 
