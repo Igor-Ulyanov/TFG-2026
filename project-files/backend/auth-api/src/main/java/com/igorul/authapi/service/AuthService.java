@@ -34,6 +34,7 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public String login(String username, String password) {
+
         User user = userRepository.findByUsername(username);
 
         if (user == null) {

@@ -15,7 +15,7 @@ public class Organization {
     private String name;
 
     private String description;
-    private Long parent_id = 4L;
+    private Long parent_id = 1L;
 
     public Organization() {}
 

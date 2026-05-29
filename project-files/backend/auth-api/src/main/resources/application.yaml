@@ -1,8 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/access_control_db
+    url: jdbc:postgresql://data-storage:5432/access_control_db
     username: admin
     password: admin123
+    hikari:
+      initialization-fail-timeout: 60000
 
   jpa:
     hibernate:

@@ -31,7 +31,7 @@ SELECT 1, id FROM permissions;
 
 --create master user
 INSERT INTO users (username, email, pass_hash)
-VALUES ('master', 'master@system.com', 'TEMP_HASH'); --hash will be ressigned via backend
+VALUES ('MASTER', 'master@system.com', '$2a$12$RKdWE7K.G/g8EB3yukQsAeLSlwL7NEVi1AYp1.OpCADxdyZAPj.sK'); --MASTER PASSWORD
 
 --assign role to master user in system org.
 INSERT INTO user_org_role (user_id, organization_id, role_id)
