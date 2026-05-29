@@ -1,5 +1,6 @@
 package com.igorul.authapi.controller;
 
+import com.igorul.authapi.dto.CreateUserResponse;
 import com.igorul.authapi.model.User;
 import com.igorul.authapi.service.AuthService;
 import com.igorul.authapi.service.UserService;
@@ -28,14 +29,14 @@ public class UserController {
     @Operation(summary = "Create a new user")
     @PostMapping
     @PreAuthorize("@authService.hasPermission(authentication, 'CREATE_USER')")
-    public User createUser(@Valid @RequestBody User user) {
+    public CreateUserResponse createUser(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
 
     @Operation(summary = "View list of all users")
     @GetMapping
     @PreAuthorize("@authService.hasPermission(authentication, 'READ_USER')")
-    public List<User> getAllUsers() {
+    public List<CreateUserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 
@@ -49,7 +50,7 @@ public class UserController {
     @Operation(summary = "Edit a user's data by their id (partial editing accepted)")
     @PutMapping("/{id}")
     @PreAuthorize("@authService.hasPermission(authentication, 'UPDATE_USER')")
-    public User updateUser(@PathVariable Long id,
+    public CreateUserResponse updateUser(@PathVariable Long id,
                            @RequestBody User user) {
 
         return userService.updateUser(id, user);

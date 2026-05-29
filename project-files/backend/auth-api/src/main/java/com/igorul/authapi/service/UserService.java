@@ -1,5 +1,6 @@
 package com.igorul.authapi.service;
 
+import com.igorul.authapi.dto.CreateUserResponse;
 import com.igorul.authapi.model.User;
 import com.igorul.authapi.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(User user) {
+    public CreateUserResponse createUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())){
             throw new RuntimeException("Email already in use");
         };
@@ -29,11 +30,29 @@ public class UserService {
 
         user.setPass_hash(passwordEncoder.encode(user.getPass_hash()));
 
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        CreateUserResponse response = new CreateUserResponse(user.getId(), user.getUsername(), user.getEmail(),
+                "Password set succesefully");
+
+        return response;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<CreateUserResponse> getAllUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(user -> {
+                    CreateUserResponse dto = new CreateUserResponse();
+
+                    dto.userId = user.getId();
+                    dto.username = user.getUsername();
+                    dto.email = user.getEmail();
+                    dto.passwordStatus = "Secret";
+
+                    return dto;
+                })
+                .toList();
     }
 
     public void deleteUser(Long id) {
@@ -44,10 +63,12 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User updateUser(Long id, User updatedUser) {
+    public CreateUserResponse updateUser(Long id, User updatedUser) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("User not found"));
+
+        CreateUserResponse response = new CreateUserResponse(user.getId(), user.getUsername(), user.getEmail(), "Password has been maintained");
 
         User existingUser =
                 userRepository.findByUsername(updatedUser.getUsername());
@@ -61,6 +82,7 @@ public class UserService {
             }
 
             user.setUsername(updatedUser.getUsername());
+            response.setUsername(updatedUser.getUsername());
         }
 
         if (updatedUser.getEmail() != null) {
@@ -72,13 +94,16 @@ public class UserService {
             }
 
             user.setEmail(updatedUser.getEmail());
+            response.setEmail(updatedUser.getEmail());
         }
 
         if (updatedUser.getPass_hash() != null) {
             user.setPass_hash(passwordEncoder.encode(updatedUser.getPass_hash()));
+            response.setPasswordStatus("Password updated succesefully");
         }
 
+        userRepository.save(user);
 
-        return userRepository.save(user);
+        return response;
     }
 }
