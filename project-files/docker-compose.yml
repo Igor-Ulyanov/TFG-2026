@@ -24,8 +24,8 @@ services:
       - postgres
     ports:
       - "8080:8080"
-    environment:
-      JWT_SECRET: mysecret
+    env_file:
+    - api-rest.env
 
 volumes:
   postgres_data:
