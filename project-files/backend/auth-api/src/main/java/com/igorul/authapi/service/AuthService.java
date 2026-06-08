@@ -28,6 +28,9 @@ public class AuthService {
     private RoleRepository roleRepository;
 
     @Autowired
+    private PermissionRepository permissionRepository;
+
+    @Autowired
     private JwtService jwtService;
 
     @Autowired
@@ -186,4 +189,48 @@ public class AuthService {
                 "ASSIGN_ROLE"
         );
     }
+
+    public boolean checkPermission(
+            String username,
+            String organizationName,
+            String permission) {
+
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        Organization org = organizationRepository
+                .findByName(organizationName);
+
+        if (org == null) {
+            throw new RuntimeException("Org not found");
+        }
+
+        Permission perm = permissionRepository
+                .findByName(permission);
+
+        if (perm == null) {
+            throw new RuntimeException("Not a valid permission");
+        }
+
+        List<UserOrgRole> relations =
+                userOrgRoleRepository.findByUserIdAndOrganizationId(
+                        user.getId(),
+                        org.getId());
+
+        for (UserOrgRole relation : relations) {
+
+            for (Permission p : relation.getRole().getPermissions()) {
+
+                if (p.getName().equals(permission)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
